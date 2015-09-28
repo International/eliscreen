@@ -9,7 +9,7 @@ case System.argv do
 
         case File.mkdir_p(path_start) do
           :ok ->
-            destination = Path.join([path_start, "#{minute}_#{sec}.png"])
+            destination = Path.join([path_start, "#{:os.system_time(:seconds)}.png"])
             case System.cmd "gnome-screenshot", ["-f", destination] do
               {_, 0} ->
                 IO.puts "Saved #{destination}"
