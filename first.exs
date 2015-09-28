@@ -1,33 +1,31 @@
 case System.argv do
   [dir_name |_ ] ->
-    {{year, month, day}, {hour, minute, sec}} = :calendar.local_time()
+    try do
+      for _ <- Stream.cycle([:ok]) do
 
-    path_start = Path.join(dir_name, to_string(year))
-    case File.mkdir_p(path_start) do
-      :ok ->
-        IO.puts "Succesfully created #{path_start}"
-      _ ->
-        IO.puts "Error!"
+        {{year, month, day}, {hour, minute, sec}} = :calendar.local_time()
+
+        path_start = Path.join([dir_name, to_string(year), to_string(month), to_string(day), to_string(hour)])
+
+        case File.mkdir_p(path_start) do
+          :ok ->
+            destination = Path.join([path_start, "#{minute}_#{sec}.png"])
+            case System.cmd "gnome-screenshot", ["-f", destination] do
+              {_, 0} ->
+                IO.puts "Saved #{destination}"
+              {output, code} ->
+                IO.puts "Error taking screenshot: #{output} code: #{code}"
+                throw :halt
+            end
+          _ ->
+            IO.puts "Error making dir!"
+        end
+
+        :timer.sleep(60 * 1000)
+      end
+    catch   
+      :halt -> IO.puts "Finished taking screenshots!"
     end
-    #
-    # case System.cmd "echo", ["hello"] do
-  #   {output, 0} ->
-    #     IO.puts "Output was #{output}"
-  #   {output, code} ->
-    #     IO.puts "Error, code #{code}"
-    # end
-
-    #     throw :halt
-    #   end
-    # catch
-      #   :halt -> IO.puts "Finished processing"
-      # end
 
    _ -> IO.puts "Please supply a folder name"
 end
-# if length(System.argv) == 1 do
-#   # try do
-#   #   for _ <- Stream.cycle([:ok]) do
-# else
-#   IO.puts "Need the folder name as an argument"
-# end
