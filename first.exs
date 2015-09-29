@@ -5,7 +5,7 @@ case System.argv do
 
         {{year, month, day}, {hour, minute, sec}} = :calendar.local_time()
 
-        path_start = Path.join([dir_name, to_string(year), to_string(month), to_string(day), to_string(hour)])
+        path_start = Path.join([dir_name, to_string(year), to_string(month), to_string(day)])
 
         case File.mkdir_p(path_start) do
           :ok ->
