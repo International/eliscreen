@@ -14,7 +14,7 @@ defmodule Netmonit do
     if new_state != state do
       send_notification!(notification_msg(state, new_state))
     else
-      IO.puts "Internet state is still: #{state}"
+      IO.puts "#{format_time} Internet state is still: #{state}"
     end
 
     :timer.sleep(sleep_time)
@@ -41,7 +41,18 @@ defmodule Netmonit do
   defp format_time do
     {{year, month, day}, {hour, min, sec}} = :calendar.local_time
 
-    "#{year}.#{month}.#{day} at #{hour}:#{min}:#{sec} ->"
+    day_components = [year] ++ ([month, day] |> Enum.map(fn el -> format_num(el) end)) |> Enum.join(".")
+    hour_components = [hour, min, sec] |> Enum.map(fn el -> format_num(el) end) |> Enum.join(":")
+
+    "#{day_components} at #{hour_components} ->"
+  end
+
+  defp format_num(num) do
+    if num < 10 do
+      "0#{num}"
+    else
+      num
+    end
   end
 end
 
